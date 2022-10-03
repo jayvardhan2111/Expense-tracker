@@ -1,15 +1,19 @@
+const express = require("express");
+const mongoose = require("mongoose");
 
-const express = require('express')
-
-const app = express()
+const app = express();
 const PORT = 4000;
 
+async function main() {
+  try {
+    let result = await mongoose.connect(MONGODB_URI);
+  } catch (error) {}
+}
 
-app.get('/',(req,res)=>{
+// main();
 
-    res.send('Hello World')
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 
-})
-
-
-app.listen(PORT,()=>console.log(`Server is Listening at ${PORT} `))
+app.listen(PORT, () => console.log(`Server is Listening at ${PORT} `));
