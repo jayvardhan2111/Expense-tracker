@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 function App() {
+  // created a form state and stored all form data in form object.
   const [form, setForm] = useState({
     amount: 0,
     description: " ",
@@ -8,26 +9,27 @@ function App() {
   });
 
   function handleInput(e) {
+    // It stores input changes in form object
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
   async function handleSubmit(e) {
-    e.preventDefault();
+    e.preventDefault(); // It prevents default form refresh on submit.
 
-    let res = await fetch("http://localhost:4000/", {
+    // It makes an API req to backend, and sends form object in body of request.
+    let res = await fetch("http://localhost:4000/transaction", {
       method: "POST",
-      body: form,
+      body: JSON.stringify(form),
+      headers:{
+        "content-type":"application/json"   // by setting this, we now get req.body as json in server.js file.
+      }
     });
     console.log(res);
   }
 
   return (
     <div>
-      <form
-        onSubmit={handleSubmit}
-        action="http://localhost:4000/"
-        method="POST"
-      >
+      <form onSubmit={handleSubmit}>
         <input
           type="number"
           name="amount"
