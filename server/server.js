@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 
 // Local Package from project
 const TransactionsAPI = require("./routes/TransactionsAPI.js");
+const AuthAPI = require("./routes/AuthAPI.js");
 const connect = require("./database/dbconnection.js");
 require("dotenv").config();
 
@@ -35,5 +36,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/transaction", TransactionsAPI);
+app.use("/auth", AuthAPI);
 
 app.listen(PORT, () => console.log(`Server is Listening at ${PORT} `));
