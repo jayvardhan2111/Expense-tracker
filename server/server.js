@@ -1,8 +1,13 @@
+// Dependencies (NPM package)
 const express = require("express");
-const mongoose = require("mongoose");
-var bodyParser = require("body-parser");
-const Transaction = require("./models/Transaction");
-require('dotenv').config();
+const bodyParser = require("body-parser");
+
+
+// Local Package from project
+const TransactionsAPI = require("./routes/TransactionsAPI.js");
+const connect = require("./database/dbconnection.js");
+require("dotenv").config();
+
 
 const app = express();
 const PORT = 4000;
@@ -19,33 +24,16 @@ app.use(bodyParser.json());
 // To send and receive json response
 app.use(express.json());
 
-// To easily make a API req from react to node/express.
+// To easily make an API req from react to node/express.
 app.use(cors());
 
-// Used to connect mongodb using Mongoose
-async function main() {
-  try {
-    let result = await mongoose.connect(process.env.MONGODB_URI);
-    // console.log(result);
-  } catch (error) {console.log(error) }
-}
-
-main();
+// connecting with mongodb atlas
+connect();
 
 app.get("/", (req, res) => {
   res.send("hello world");
 });
 
-app.post("/transaction", async (req, res) => {
-  const {amount,description,date} = req.body;
-  const transaction = new Transaction({
-    amount,
-    description,
-    date,
-  });
-  await transaction.save();
-
-  res.json({ message: "success" });
-});
+app.use("/transaction", TransactionsAPI);
 
 app.listen(PORT, () => console.log(`Server is Listening at ${PORT} `));

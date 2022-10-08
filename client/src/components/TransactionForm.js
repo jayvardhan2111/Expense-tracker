@@ -7,32 +7,84 @@ import TextField from "@mui/material/TextField";
 import { LocalizationProvider, DesktopDatePicker } from "@mui/x-date-pickers/";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-const Initialform = { amount: 0, description: " ", date: new Date() };
+const Initialform = { amount: null, description: null, date: null };
 
-export default function TransactionForm() {
+export default function TransactionForm({
+  fetchTransactions,
+  editTransaction,
+  setEditTransaction
+}) {
+  // created a form state and stored all form data in form object.
   const [form, setForm] = useState(Initialform);
+
+  useEffect(() => {
+    if (editTransaction !== {}) {
+      setForm(editTransaction);
+    }
+  }, [editTransaction]);
 
   function handleChange(e) {
     // It stores input changes in form object
     setForm({ ...form, [e.target.name]: e.target.value });
+    
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault(); // It prevents default form refresh on submit.
-
-    // It makes an API req to backend, and sends form object in body of request.
-    let res = await fetch("http://localhost:4000/transaction", {
+  async function create(){
+     // It makes an API req to backend, and sends form object in body of request.
+     let res = await fetch("http://localhost:4000/transaction", {
       method: "POST",
       body: JSON.stringify(form),
       headers: {
         "content-type": "application/json", // by setting this, we now get req.body as json in server.js file.
       },
     });
+    return res
+  }
+
+
+  async function update(){
+     // It makes an API req to backend, and sends form object in body of request.
+     let res = await fetch(`http://localhost:4000/transaction/${editTransaction._id}`, {
+      method: "PATCH",
+      body: JSON.stringify(form),
+      headers: {
+        "content-type": "application/json", // by setting this, we now get req.body as json in server.js file.
+      },
+    });
+    
+    return res
+  }
+
+
+  
+
+  async function handleSubmit(e) {
+    e.preventDefault(); // It prevents default form refresh on submit. 
+
+    let res;
+
+    if (Object.keys(editTransaction).length == 0){
+        res = await create()
+       
+    }
+    else{
+      res = await update()
+      if(res.ok){
+        setEditTransaction({})
+
+      }
+    }
+
+   
     if (res.ok) {
       setForm(Initialform);
-      //   fetchTransactions();
+      fetchTransactions();
     }
     console.log(res);
+  }
+
+  function handleDate(newValue) {
+    setForm({ ...form, date: newValue });
   }
 
   return (
@@ -43,6 +95,7 @@ export default function TransactionForm() {
           <TextField
             id="outlined-basic"
             label="Amount"
+            type="Number"
             variant="outlined"
             sx={{ marginRight: 6 }}
             size="small"
@@ -66,13 +119,24 @@ export default function TransactionForm() {
               inputFormat="MM/DD/YYYY"
               value={form.date}
               name="date"
-              onChange={handleChange}
+              onChange={handleDate}
               renderInput={(params) => (
                 <TextField {...params} sx={{ marginRight: 6 }} size="small" />
               )}
             />
           </LocalizationProvider>
-          <Button variant="contained">Submit</Button>
+          {console.log(editTransaction)}
+          {Object.keys(editTransaction).length !== 0 ? (
+            <Button type="submit" variant="contained" color="info">
+              Update
+            </Button>
+          ) : (
+            <Button type="submit" variant="contained">
+              Submit
+            </Button>
+          )}
+
+          {/* <Button type="submit" variant="contained">Submit</Button> */}
         </form>
       </CardContent>
     </Card>

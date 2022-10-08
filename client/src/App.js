@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import AppBar from "./components/AppBar";
 import TransactionForm from "./components/TransactionForm";
-
-
-
+import TransactionList from "./components/TransactionList";
+import { Container } from "@mui/system";
 
 function App() {
-  // created a form state and stored all form data in form object.
- 
-
   const [transactions, setTransactions] = useState([]);
+  const [editTransaction, setEditTransaction] = useState({});
 
   useEffect(() => {
     fetchTransactions();
@@ -24,39 +21,21 @@ function App() {
     console.log(data);
   }
 
-
-
- 
-
-
   return (
     <div>
       <AppBar />
-      <TransactionForm/>
-      
-      
-      <br></br>
-      <br></br>
 
-      <section>
-        <table>
-          <thead>
-            <th>Amount</th>
-            <th>Description</th>
-            <th>Date</th>
-          </thead>
 
-          <tbody>
-            {transactions?.map((trx) => (
-              <tr key={trx._id}>
-                <td>{trx.amount}</td>
-                <td>{trx.description}</td>
-                <td>{trx.date}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+      <Container>
+        <TransactionForm fetchTransactions={fetchTransactions} editTransaction={editTransaction} setEditTransaction={setEditTransaction} />
+      </Container>
+
+      
+      <TransactionList
+        transactions={transactions}
+        fetchTransactions={fetchTransactions}
+        setEditTransaction={setEditTransaction}
+      />
     </div>
   );
 }
