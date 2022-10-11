@@ -35,7 +35,8 @@ app.get("/", (req, res) => {
   res.send("hello world");
 });
 
+
 app.use("/transaction", TransactionsAPI);
 app.use("/auth", AuthAPI);
 
-app.listen(PORT, () => console.log(`Server is Listening at ${PORT} `));
+app.listen(PORT, () => console.log(`Server is Listening on ${PORT} `));
